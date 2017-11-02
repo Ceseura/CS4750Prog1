@@ -53,6 +53,23 @@ try:
 			PRIMARY KEY(developer_id)
 			)''')
 
+		cursor.execute('''DROP TABLE IF EXISTS products''')
+		cursor.execute('''CREATE TABLE products (
+			product_id int AUTO_INCREMENT,
+			product_name varchar(100),
+			product_description varchar(400),
+			price decimal(20, 2),
+			genre varchar(100),
+			release_date datetime,
+			stock int,
+			merchant_id int,
+			developer_id int,
+
+			PRIMARY KEY(product_id),
+			FOREIGN KEY(merchant_id) references merchants(merchant_id),
+			FOREIGN KEY(developer_id) references developers(developer_id)
+			)''')
+
 		cursor.execute('''DROP TABLE IF EXISTS shopping_cart''')
 		cursor.execute('''CREATE TABLE shopping_cart (
 			customer_id int,
@@ -61,23 +78,6 @@ try:
 			PRIMARY KEY(customer_id, product_id),
 			FOREIGN KEY(customer_id) references customers(customer_id),
 			FOREIGN KEY(product_id) references products(product_id)
-			)''')
-
-		cursor.execute('''DROP TABLE IF EXISTS products''')
-		cursor.execute('''CREATE TABLE products (
-			product_id int AUTO_INCREMENT,
-			product_name varchar(100),
-			product_condition varchar(100),
-			product_description varchar(400),
-			price decimal(20, 2),
-			genre varchar(100),
-			release_date datetime,
-			merchant_id int,
-			developer_id int,
-
-			PRIMARY KEY(product_id),
-			FOREIGN KEY(merchant_id) references merchants(merchant_id),
-			FOREIGN KEY(developer_id) references developers(developer_id)
 			)''')
 
 		cursor.execute('''DROP TABLE IF EXISTS transactions''')
@@ -103,11 +103,11 @@ try:
 			review_date_time datetime,
 			review_rating int,
 			customer_id int,
-			merchant_id int,
+			product_id int,
 
 			PRIMARY KEY(review_id),
 			FOREIGN KEY(customer_id) references customers(customer_id),
-			FOREIGN KEY(merchant_id) references merchants(merchant_id)
+			FOREIGN KEY(product_id) references products(product_id)
 			)''')
 
 		cursor.execute('''DROP TABLE IF EXISTS developer_produces_product''')
@@ -137,4 +137,55 @@ try:
 
 finally: 
 	connection.close()
+
+'''
+DROP TABLE IF EXISTS transactions;
+CREATE TABLE transactions (
+			transaction_id int AUTO_INCREMENT,
+			date_time datetime,
+			amount_paid decimal(20,2),
+			payment_method varchar(20),
+			customer_id int,
+			merchant_id int,
+			product_id int,
+
+			PRIMARY KEY(transaction_id),
+			FOREIGN KEY(customer_id) references customers(customer_id),
+			FOREIGN KEY(merchant_id) references merchants(merchant_id),
+			FOREIGN KEY(product_id) references products(product_id)
+			);
+DROP TABLE IF EXISTS reviews;
+CREATE TABLE reviews (
+			review_id int AUTO_INCREMENT,
+			review_content varchar(1000),
+			review_date_time datetime,
+			review_rating int,
+			customer_id int,
+			product_id int,
+
+			PRIMARY KEY(review_id),
+			FOREIGN KEY(customer_id) references customers(customer_id),
+			FOREIGN KEY(product_id) references products(product_id)
+			);
+DROP TABLE IF EXISTS developer_produces_product;
+CREATE TABLE developer_produces_product (
+			product_id int,
+			developer_id int,
+
+			PRIMARY KEY(product_id, developer_id),
+			FOREIGN KEY(product_id) references products(product_id),
+			FOREIGN KEY(developer_id) references developers(developer_id)
+			);
+DROP TABLE IF EXISTS support_tickets;
+CREATE TABLE support_tickets (
+			ticket_id int AUTO_INCREMENT,
+			ticket_content varchar(1000),
+			ticket_date_time datetime,
+			customer_id int,
+
+			PRIMARY KEY(ticket_id),
+			FOREIGN KEY(customer_id) references customers(customer_id)
+			);
+SET FOREIGN_KEY_CHECKS = 1;
+'''
 
